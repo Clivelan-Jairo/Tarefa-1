@@ -69,6 +69,14 @@
         return;
       }
 
+      // Se houver busca ativa, limpa o campo e recarrega sem filtro
+      if (window.location.search.includes('q=')) {
+        const searchInput = document.querySelector('.search-form input[name="q"]');
+        if (searchInput) searchInput.value = '';
+        window.location.href = window.location.pathname;
+        return;
+      }
+
       // Renderizar a nova nota no cliente
       const item = renderNote(json.data);
       list.prepend(item);
@@ -150,6 +158,49 @@
     items.forEach(li => list.appendChild(li));
   });
 
+  // Busca dinâmica de notas ao digitar e ao clicar em buscar
+  const searchForm = document.querySelector('.search-form');
+  const searchInput = document.querySelector('.search-form input[name="q"]');
+  if (searchInput && searchForm) {
+    let searchTimeout;
+    function buscarNotas(q) {
+      fetch('api.php?notes=1&q=' + encodeURIComponent(q))
+        .then(res => res.json())
+        .then(json => {
+          if (json.ok && Array.isArray(json.data)) {
+            list.innerHTML = '';
+            let resultados = json.data;
+            if (q) {
+              // Filtra apenas pelo título
+              resultados = resultados.filter(note =>
+                note.title.toLowerCase().includes(q.toLowerCase())
+              );
+            }
+            if (resultados.length) {
+              resultados.forEach(note => {
+                const item = renderNote(note);
+                list.appendChild(item);
+              });
+              empty.hidden = true;
+            } else {
+              empty.hidden = false;
+            }
+            updateNoteCount();
+          }
+        });
+    }
+    searchInput.addEventListener('input', function () {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        buscarNotas(searchInput.value.trim());
+      }, 300);
+    });
+    searchForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      buscarNotas(searchInput.value.trim());
+    });
+  }
+
   // Função para renderizar uma nova nota
   function renderNote(note) {
     const li = document.createElement('li');
@@ -159,8 +210,10 @@
         <h3>${note.title}</h3>
         <p>${note.content}</p>
         <time datetime="${note.created_at}">Criado em: ${note.created_at}</time>
-        <button class="edit-note" data-id="${note.id}"><i class="fas fa-edit"></i> Editar</button>
-        <button class="delete-note" data-id="${note.id}"><i class="fas fa-trash"></i> Excluir</button>
+        <div class="note-actions">
+          <button class="edit-note" data-id="${note.id}"><i class="fas fa-edit"></i> Editar</button>
+          <button class="delete-note" data-id="${note.id}"><i class="fas fa-trash"></i> Excluir</button>
+        </div>
       </article>
     `;
     return li;
