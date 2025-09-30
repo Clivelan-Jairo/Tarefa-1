@@ -132,9 +132,6 @@ input:focus, textarea:focus {
   cursor: pointer;
   transition: background-color 0.2s, transform 0.1s;
 }
-.btn:hover {
-  /* Efeito de hover mais pronunciado */
-}
 .btn:focus {
   outline: none; /* Remove a borda preta/azul de foco */
 }
@@ -303,11 +300,6 @@ article .note-actions {
     padding: 32px 16px; /* Aumenta o padding vertical */
   }
 
-  .controls-container {
-    flex-direction: row; /* Controles de busca e ordenação em linha */
-    justify-content: space-between;
-    align-items: center; /* Centraliza verticalmente no desktop */
-  }
 }
 /* Garante que ícones FontAwesome fiquem visíveis nos botões */
 .btn i {
