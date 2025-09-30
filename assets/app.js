@@ -158,28 +158,36 @@
   const searchInput = document.querySelector('.search-form input[name="q"]');
   if (searchInput && searchForm) {
     let searchTimeout;
-    function buscarNotas(q) {
-      // A busca agora é feita no backend via GET no index.php,
-      // então vamos submeter o formulário para recarregar a página com o filtro.
-      // Para uma experiência 100% CSR, a API precisaria de um endpoint de busca.
-      searchForm.submit();
+
+    async function buscarNotas(query) {
+      const res = await fetch(`api.php?q=${encodeURIComponent(query)}`);
+      const json = await res.json();
+
+      if (json.ok && Array.isArray(json.data)) {
+        list.innerHTML = ''; // Limpa a lista atual
+        if (json.data.length > 0) {
+          json.data.forEach(note => {
+            const noteElement = renderNote(note);
+            list.appendChild(noteElement);
+          });
+          empty.hidden = true;
+        } else {
+          empty.hidden = false;
+        }
+        updateNoteCount();
+      } else {
+        console.error("Erro ao buscar notas:", json.error);
+      }
     }
-    searchInput.addEventListener('input', function () {
-      // A busca dinâmica foi removida para simplificar e usar o SSR.
-      // Para reativar, a API precisa de um endpoint de busca.
-      /* clearTimeout(searchTimeout);
-        .then(res => res.json())
-        .then(json => {
-          if (json.ok && Array.isArray(json.data)) {
-            list.innerHTML = '';
-            let resultados = json.data;
-            if (q) {
-              // Filtra apenas pelo título
+
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
       searchTimeout = setTimeout(() => {
         buscarNotas(searchInput.value.trim());
       }, 300);
-      */
     });
+
+    // Previne o envio do formulário que recarrega a página
     searchForm.addEventListener('submit', function (e) {
       e.preventDefault();
       buscarNotas(searchInput.value.trim());
@@ -191,12 +199,12 @@
     const li = document.createElement('li');
     li.dataset.id = note.id;
     li.innerHTML = `
-      <article>
-        <h3>${note.title}</h3>
-        <p>${note.content}</p>
-        <time datetime="${note.created_at}">Criado em: ${note.created_at}</time>
+      <article> 
+        <h3></h3>
+        <p></p>
+        <time datetime=""></time>
         <div class="note-actions">
-          <button class="edit-note" data-id="${note.id}"><i class="fas fa-edit"></i> Editar</button>
+          <button class="btn btn-edit edit-note" data-id="${note.id}"><i class="fas fa-edit"></i> Editar</button>
           <button class="delete-note" data-id="${note.id}"><i class="fas fa-trash"></i> Excluir</button>
         </div>
       </article>

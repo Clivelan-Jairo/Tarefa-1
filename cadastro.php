@@ -214,10 +214,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         return isEmailValid && isUsernameValid && isPasswordStrongEnough && doPasswordsMatch;
       }
 
+      // Habilita/desabilita o botão de cadastro
+      function toggleRegisterButton() {
+        registerButton.disabled = !checkAllValidations();
+      }
+
       function validateForm(event) {
         // Se o formulário não for válido, previne o envio e força a exibição de todos os feedbacks de erro.
         if (!checkAllValidations()) {
           event.preventDefault();
+          if (document.querySelector('.login-error')) {
+            document.querySelector('.login-error').style.display = 'none'; // Esconde erro do PHP se houver
+          }
           // Força a revalidação visual de todos os campos para mostrar os erros
           validateEmail();
           validateUsername();
@@ -250,15 +258,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       passwordInput.addEventListener('input', () => {
         checkPasswordStrength();
         comparePasswords();
+        toggleRegisterButton();
       });
-      confirmPasswordInput.addEventListener('input', comparePasswords);
+      confirmPasswordInput.addEventListener('input', () => {
+        comparePasswords();
+        toggleRegisterButton();
+      });
       form.addEventListener('submit', validateForm);
 
-      // Executa as validações iniciais caso os campos já venham preenchidos (ex: autofill do navegador)
-      validateEmail();
-      validateUsername();
-      checkPasswordStrength();
-      comparePasswords();
+      // Desabilita o botão inicialmente
+      toggleRegisterButton();
     });
   </script>
 </body>

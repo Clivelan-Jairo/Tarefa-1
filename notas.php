@@ -6,14 +6,9 @@ if (!isset($_SESSION['user'])) {
 }
 require 'db.php';
 // ...código para buscar notas igual ao index.php...
-$q = $_GET['q'] ?? '';
-if ($q) {
-  $stmt = pdo()->prepare("SELECT * FROM notes WHERE title LIKE ? OR content LIKE ? ORDER BY created_at DESC");
-  $stmt->execute(["%$q%", "%$q%"]);
-} else {
-  $stmt = pdo()->query("SELECT * FROM notes ORDER BY created_at DESC");
-}
-$notes = $stmt->fetchAll();
+$stmt = pdo()->prepare("SELECT * FROM notes WHERE user_id = ? ORDER BY created_at DESC");
+$stmt->execute([$_SESSION['user_id']]);
+$notes = $stmt->fetchAll(); 
 $noteCount = count($notes);
 function e($str) { return htmlspecialchars($str, ENT_QUOTES, 'UTF-8'); }
 ?>
