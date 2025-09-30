@@ -6,6 +6,13 @@ A aplicação tem partes renderizadas no **servidor (PHP + MySQL)** e também re
 
 ---
 
+## 🌐 Acesse Online
+Você pode testar a aplicação online no seguinte link:
+
+(http://notastapajos.rf.gd)
+
+---
+
 ## 🚀 Tecnologias
 - PHP
 - HTML
