@@ -1,4 +1,5 @@
 <?php
+session_start(); // Inicia a sessão para acessar o user_id
 require_once __DIR__ . '/db.php';
 
 header('Access-Control-Allow-Origin: *');
@@ -13,6 +14,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $pdo = pdo();
 $method = $_SERVER['REQUEST_METHOD'];
 
+if (!isset($_SESSION['user_id'])) {
+    json_response(['ok' => false, 'error' => 'Não autorizado. Faça login novamente.'], 401);
+}
+$user_id = $_SESSION['user_id'];
+
 function json_response($data, $code = 200) {
     http_response_code($code);
     header('Content-Type: application/json; charset=utf-8');
@@ -22,7 +28,8 @@ function json_response($data, $code = 200) {
 
 try {
     if ($method === 'GET' && isset($_GET['notes'])) {
-        $stmt = $pdo->query("SELECT id, title, content, created_at FROM notes ORDER BY created_at DESC");
+        $stmt = $pdo->prepare("SELECT id, title, content, created_at FROM notes WHERE user_id = ? ORDER BY created_at DESC");
+        $stmt->execute([$user_id]);
         $rows = $stmt->fetchAll();
         json_response(['ok' => true, 'data' => $rows]);
     }
@@ -32,8 +39,8 @@ try {
         if ($id <= 0) {
             json_response(['ok' => false, 'error' => 'ID inválido.'], 400);
         }
-        $stmt = $pdo->prepare("SELECT id, title, content FROM notes WHERE id = ?");
-        $stmt->execute([$id]);
+        $stmt = $pdo->prepare("SELECT id, title, content FROM notes WHERE id = ? AND user_id = ?");
+        $stmt->execute([$id, $user_id]);
         $note = $stmt->fetch();
         if (!$note) {
             json_response(['ok' => false, 'error' => 'Nota não encontrada.'], 404);
@@ -47,10 +54,10 @@ try {
         if ($title === '' || $content === '') {
             json_response(['ok' => false, 'error' => 'Campos obrigatórios.'], 400);
         }
-        $stmt = $pdo->prepare("INSERT INTO notes (title, content) VALUES (?, ?)");
-        $stmt->execute([$title, $content]);
+        $stmt = $pdo->prepare("INSERT INTO notes (user_id, title, content) VALUES (?, ?, ?)");
+        $stmt->execute([$user_id, $title, $content]);
         $id = $pdo->lastInsertId();
-        $row = $pdo->query("SELECT id, title, content, created_at FROM notes WHERE id = " . (int)$id)->fetch();
+        $row = $pdo->query("SELECT id, title, content, created_at FROM notes WHERE id = " . (int)$id . " AND user_id = " . (int)$user_id)->fetch();
         json_response(['ok' => true, 'data' => $row], 201);
     }
 
@@ -59,8 +66,8 @@ try {
         if ($id <= 0) {
             json_response(['ok' => false, 'error' => 'ID inválido.'], 400);
         }
-        $stmt = $pdo->prepare("DELETE FROM notes WHERE id = ?");
-        $stmt->execute([$id]);
+        $stmt = $pdo->prepare("DELETE FROM notes WHERE id = ? AND user_id = ?");
+        $stmt->execute([$id, $user_id]);
         json_response(['ok' => true]);
     }
 
@@ -74,10 +81,10 @@ try {
             json_response(['ok' => false, 'error' => 'Dados inválidos.'], 400);
         }
 
-        $stmt = $pdo->prepare("UPDATE notes SET title = ?, content = ? WHERE id = ?");
-        $stmt->execute([$title, $content, $id]);
+        $stmt = $pdo->prepare("UPDATE notes SET title = ?, content = ? WHERE id = ? AND user_id = ?");
+        $stmt->execute([$title, $content, $id, $user_id]);
 
-        $row = $pdo->query("SELECT id, title, content, created_at FROM notes WHERE id = " . (int)$id)->fetch();
+        $row = $pdo->query("SELECT id, title, content, created_at FROM notes WHERE id = " . (int)$id . " AND user_id = " . (int)$user_id)->fetch();
         json_response(['ok' => true, 'data' => $row]);
     }
 
