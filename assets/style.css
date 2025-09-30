@@ -4,34 +4,100 @@
 }
 body {
   background: linear-gradient(120deg, #e0e7ef 0%, #f5f6fa 100%);
-  font-family: 'Roboto', Arial, sans-serif;
+  font-family: 'Poppins', 'Roboto', Arial, sans-serif;
   margin: 0;
   color: #222;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 header {
-  background: #5a7ca3;
+  background: #4a69bd; /* Um azul um pouco mais vibrante */
   color: #fff;
-  padding: 32px 0 16px 0;
-  text-align: center;
+  padding: 24px 32px;
   box-shadow: 0 2px 8px rgba(90,124,163,0.08);
 }
-header h1 {
-  font-size: 2.5rem;
-  margin: 0;
+.header-content {
+  max-width: 900px;
+  margin: 0 auto;
   display: flex;
+  justify-content: space-between; /* Alinha título e botão */
   align-items: center;
-  justify-content: center;
-  gap: 12px;
+  flex-wrap: wrap; /* Permite que o menu quebre a linha */
+  position: relative; /* Para posicionar o menu mobile */
+}
+.header-title h1 {
+  font-size: 1.8rem; /* Tamanho de fonte padrão para mobile */
+  margin: 0;
+}
+.header-title p {
+  margin: 4px 0 0 0;
+  opacity: 0.9;
+}
+.main-menu {
+  /* Mobile: Escondido por padrão e ocupa a largura toda */
+  display: none;
+  flex-direction: column;
+  width: 100%;
+  background-color: #4a69bd; /* Mesmo fundo do header */
+  order: 4; /* Garante que o menu apareça por último no mobile */
+  padding: 10px 0;
+  gap: 5px;
+}
+.header-content.menu-open .main-menu {
+  display: flex; /* Mostra o menu quando a classe .menu-open está presente */
+}
+.menu-toggle {
+  display: block; /* Mostra o botão no mobile */
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding: 5px;
+}
+.menu-toggle .fa-times {
+  display: none; /* Ícone de fechar escondido por padrão */
+}
+.header-content.menu-open .menu-toggle .fa-bars {
+  display: none; /* Esconde o ícone de hambúrguer quando o menu está aberto */
+}
+.header-content.menu-open .menu-toggle .fa-times {
+  display: block; /* Mostra o ícone de fechar quando o menu está aberto */
+}
+.user-greeting {
+  color: #fff;
+  opacity: 0.9;
+  font-size: 0.9rem;
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Linha separadora */
+  margin-bottom: 5px; /* Espaço abaixo da saudação */
+}
+.main-menu a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  border: 1px solid transparent;
+}
+.main-menu a:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+.main-menu a.active {
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #4a69bd;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 main {
   max-width: 900px;
-  margin: 0 auto;
-  padding: 32px 16px;
+  margin: 0 auto; /* Centraliza o conteúdo */
+  padding: 24px 16px; /* Padding padrão para mobile */
 }
 .new-note {
   background: #f8fafc;
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(90,124,163,0.06);
+  box-shadow: 0 4px 24px rgba(74, 105, 189, 0.08);
   padding: 24px;
   margin-bottom: 32px;
 }
@@ -46,24 +112,35 @@ input, textarea {
   border-radius: 8px;
   font-size: 1rem;
   background: #f5f6fa;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
-button {
+input:focus, textarea:focus {
+  outline: none;
+  border-color: #6a89cc;
+  box-shadow: 0 0 0 3px rgba(74, 105, 189, 0.2);
+}
+.btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 10px 18px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(90deg, #7b93b6 60%, #e0e7ef 100%);
-  color: #222;
-  font-size: 1.1rem;
+  color: #fff;
+  font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s;
-  box-shadow: 0 2px 8px rgba(90,124,163,0.06);
+  transition: background-color 0.2s, transform 0.1s;
 }
-button:hover {
-  background: #bfcad9;
+.btn:hover {
+  /* Efeito de hover mais pronunciado */
+}
+.btn:focus {
+  outline: none; /* Remove a borda preta/azul de foco */
+}
+
+.btn:active {
+  transform: translateY(1px);
 }
 #title-count {
   font-size: 0.85rem;
@@ -76,21 +153,18 @@ button:hover {
 #notes-list {
   list-style: none;
   padding: 0;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 18px;
 }
 #notes-list li {
   background: #f8fafc;
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(90,124,163,0.08);
+  box-shadow: 0 4px 24px rgba(74, 105, 189, 0.08);
   padding: 18px;
   border: 1px solid #e3e3e3;
   transition: transform 0.2s, box-shadow 0.2s;
   display: block;
-}
-#notes-list li:hover {
-  transform: scale(1.02);
-  box-shadow: 0 8px 24px rgba(90,124,163,0.12);
 }
 #notes-list li article {
   display: flex;
@@ -100,7 +174,7 @@ button:hover {
 }
 article h3 {
   margin: 0 0 8px 0;
-  color: #5a7ca3;
+  color: #4a69bd;
   font-size: 1.2rem;
 }
 article p {
@@ -114,16 +188,25 @@ time {
   margin-bottom: 8px;
   display: block;
 }
-.edit-note {
-  background: linear-gradient(90deg, #a3b8d1 60%, #e0e7ef 100%);
-  color: #222;
-  font-weight: bold;
-  margin-right: 8px;
+/* Estilos de botões */
+.btn-primary, form button[type="submit"], .search-form button, #add-note-fab { background-color: #4a69bd; }
+.btn-edit    { background-color: #6c757d; }
+.btn-delete  { background-color: #dc3545; }
+.btn-cancel  { background-color: #f39c12; }
+
+/* Efeitos Hover */
+.btn-primary:hover, form button[type="submit"]:hover, .search-form button:hover, #add-note-fab:hover { background-color: #3c5699; }
+.btn-edit:hover, #sort-toggle:hover { background-color: #5a6268; }
+.btn-delete:hover { background-color: #c82333; }
+.btn-cancel:hover { background-color: #e67e22; }
+
+/* Aplicando estilos aos botões existentes */
+form button[type="submit"], .search-form button {
+  color: #fff;
 }
-.delete-note {
-  background: linear-gradient(90deg, #e3a3a3 60%, #f5f6fa 100%);
-  color: #222;
-  font-weight: bold;
+.note-actions .btn {
+  padding: 6px 12px;
+  font-size: 0.9rem;
 }
 #empty {
   color: #666;
@@ -131,114 +214,295 @@ time {
   font-style: italic;
 }
 .controls {
-  margin: 20px 0;
-  text-align: center;
+  display: none; /* Obsoleto, substituído por .controls-container */
 }
-#sort-toggle {
-  background: linear-gradient(90deg, #a3b8d1 60%, #e0e7ef 100%);
-  color: #222;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 1rem;
-  transition: background 0.3s;
-}
-#sort-toggle:hover {
-  background: #bfcad9;
+.controls-container {
+  display: flex;
+  flex-direction: row; /* Alinha os itens horizontalmente */
+  align-items: center; /* Alinha verticalmente */
+  gap: 8px; /* Espaçamento entre busca e ordenação */
+  margin-bottom: 24px;  
 }
 .search-form {
-  margin-bottom: 1rem;
+  flex-grow: 1;
   display: flex;
-  gap: 0.5rem;
 }
 .search-form input {
-  flex: 1;
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  background: #f5f6fa;
+  flex-grow: 1;
+  border-radius: 8px 0 0 8px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 .search-form button {
-  padding: 0.5rem 1rem;
-  background: #7b93b6;
-  color: #222;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
-.search-form button:hover {
-  background: #bfcad9;
+.btn-round {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  padding: 0;
+  justify-content: center;
+  background-color: #6c757d;
 }
+.btn-round:hover { background-color: #5a6268; }
+
 footer {
-  background: #5a7ca3;
+  background: #4a69bd;
   color: #fff;
   text-align: center;
   padding: 18px 0;
   font-size: 1rem;
   margin-top: 32px;
 }
-@media (max-width: 768px) {
-  main {
-    padding: 10px;
-  }
-  header h1 {
-    font-size: 1.5rem;
-  }
-  button {
-    font-size: 0.95rem;
-  }
-  #notes-list li {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .note-image {
-    width: 100%;
-    height: 120px;
-    margin-bottom: 12px;
-  }
-  .note-actions {
-    flex-direction: row !important;
-    justify-content: flex-start;
-    gap: 8px;
-  }
-}
-form.editing {
-  border: 2px solid #5a7ca3;
-  background: #e0e7ef;
-  padding: 16px;
-  border-radius: 8px;
-  position: relative;
-}
-form.editing::before {
-  content: 'Editando nota';
-  position: absolute;
-  top: -10px;
-  left: 10px;
-  background: #5a7ca3;
-  color: #fff;
-  font-size: 0.9rem;
-  padding: 2px 8px;
-  border-radius: 4px;
-}
+
 article .note-actions {
-  display: flex !important;
-  flex-direction: row !important;
+  display: flex;
+  flex-direction: row;
   gap: 8px;
   margin-top: 8px;
   width: 100%;
   justify-content: flex-start;
 }
-.note-actions button {
-  flex: 0 0 auto;
+
+/* --- Media Queries para Telas Maiores (Tablet e Desktop) --- */
+
+/* Efeito de hover apenas em dispositivos com mouse */
+@media (hover: hover) and (pointer: fine) {
+  #notes-list li:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 8px 32px rgba(74, 105, 189, 0.15);
+  }
+}
+
+/* Estilos para tablets e telas maiores */
+@media (min-width: 768px) {
+  .menu-toggle {
+    display: none; /* Esconde o botão hambúrguer no desktop */
+  }
+  .header-content {
+    flex-direction: row; /* Header em linha */
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+  .main-menu {
+    display: flex !important; /* Garante que o menu seja sempre visível */
+    flex-direction: row;
+    width: auto; /* Largura automática */
+    gap: 10px;
+    align-items: center; /* Alinha verticalmente os itens do menu */
+    order: 0; /* Reseta a ordem para o desktop */
+  } 
+
+  .header-title h1 {
+    font-size: 2rem; /* Fonte maior no desktop */
+  }
+
+  main {
+    padding: 32px 16px; /* Aumenta o padding vertical */
+  }
+
+  .controls-container {
+    flex-direction: row; /* Controles de busca e ordenação em linha */
+    justify-content: space-between;
+    align-items: center; /* Centraliza verticalmente no desktop */
+  }
 }
 /* Garante que ícones FontAwesome fiquem visíveis nos botões */
-.note-actions i, button i, .fa, .fas {
-  color: #5a7ca3 !important;
-  font-size: 1.1em !important;
-  display: inline-block !important;
+.btn i {
+  color: #fff;
+  font-size: 1.1em;
+  display: inline-block;
   vertical-align: middle;
   margin-right: 4px;
+}
+
+.btn-round i {
+  margin-right: 0; /* Remove a margem para centralizar o ícone único */
+}
+
+.login-main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+.login-container {
+  background-color: #f8fafc;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(74, 105, 189, 0.15);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+.login-header {
+  margin-bottom: 24px;
+}
+.login-header h1 {
+  color: #4a69bd;
+  font-size: 2rem;
+  margin: 0 0 8px 0;
+}
+.login-header p {
+  color: #555;
+  margin: 0;
+}
+.login-form .field {
+  text-align: left;
+}
+.login-form .field.with-icon {
+  position: relative; /* Necessário para posicionar o feedback absoluto */
+  margin-bottom: 25px; /* Aumenta a margem para dar espaço ao feedback */
+}
+.login-form .field {
+  position: relative;
+}
+.login-form .field.with-icon i {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  transform: translateY(-50%);
+  color: #aaa;
+}
+.login-form .field.with-icon .toggle-password {
+  left: auto; /* Remove o posicionamento à esquerda */
+  right: 15px; /* Posiciona à direita */
+  cursor: pointer;
+  color: #888;
+  transition: color 0.2s;
+}
+.login-form .field.with-icon .toggle-password:hover { color: #333; }
+.login-form .field.with-icon input {
+  padding-left: 40px; /* Espaço para ícone esquerdo */
+}
+.login-form button {
+  width: 100%;
+  justify-content: center;
+  padding: 12px;
+  margin-top: 8px;
+}
+.login-links {
+  margin-top: 24px;
+  display: flex;
+  justify-content: space-between;
+}
+.login-links a {
+  color: #4a69bd;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.login-error, .login-success {
+  margin-bottom: 15px;
+  text-align: center;
+  background: #e3a3a3; /* erro */
+  color: #222;
+}
+.login-success {
+  background: #a3d1b0; /* sucesso */
+}
+
+.feedback-message {
+  position: absolute;
+  top: -30px; /* Posição acima do input */
+  left: 50%; /* Centraliza horizontalmente */
+  transform: translateX(-50%) translateY(5px); /* Ajusta para centralizar e offset inicial */
+  background-color: #333; /* Fundo escuro para o tooltip */
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem; /* Fonte menor para tooltip */
+  text-align: left;
+  opacity: 0; /* Esconde por padrão */
+  transform: translateY(5px); /* Pequeno deslocamento inicial */
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Animação suave */
+  pointer-events: none; /* Não interfere com cliques no input */
+  white-space: nowrap; /* Evita quebra de linha */
+  z-index: 10; /* Garante que o tooltip fique acima de outros elementos */
+}
+
+.feedback-message.active {
+  opacity: 1; /* Mostra quando ativo */
+  transform: translateX(-50%) translateY(0); /* Retorna à posição original */
+}
+
+/* Seta do tooltip */
+.feedback-message::after {
+  content: '';
+  position: absolute;
+  bottom: -5px; /* Posição abaixo do tooltip */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent; /* Seta apontando para baixo */
+}
+
+.feedback-message.error {
+  background-color: #dc3545;
+  border-color: #dc3545 transparent transparent transparent;
+}
+.feedback-message.warning {
+  background-color: #f39c12;
+  border-color: #f39c12 transparent transparent transparent;
+}
+.feedback-message.success {
+  background-color: #28a745;
+  border-color: #28a745 transparent transparent transparent;
+}
+
+/* Estilos para inputs baseados no status do campo pai */
+.login-form .field.error input {
+  border-color: #dc3545; /* Vermelho */
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
+}
+.login-form .field.warning input {
+  border-color: #f39c12; /* Laranja */
+  box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.2);
+}
+.login-form .field.success input {
+  border-color: #28a745; /* Verde */
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
+}
+
+/* Estilos para o ícone de status dentro do input */
+.status-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none; /* Não interfere com cliques */
+}
+.login-form .field.with-icon input {
+  padding-right: 40px; /* Espaço para o ícone de status */
+}
+.field.error .status-icon,
+.field.warning .status-icon,
+.field.success .status-icon {
+  opacity: 1;
+}
+.status-icon .fa-check-circle { color: #28a745; } /* Verde */
+.status-icon .fa-times-circle { color: #dc3545; } /* Vermelho */
+.status-icon .fa-exclamation-circle { color: #f39c12; } /* Laranja */
+
+#add-note-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #4a69bd;
+  color: white;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s, transform 0.2s;
 }
