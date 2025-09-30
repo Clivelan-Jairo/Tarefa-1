@@ -1,11 +1,23 @@
 -- Criação de tabela para notas
-CREATE TABLE IF NOT EXISTS notes (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  title VARCHAR(120) NOT NULL,
-  content TEXT NOT NULL,
-  image VARCHAR(255), -- Nova coluna para URLs de imagens
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- Tabela de usuários
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Alteração para adicionar a coluna 'image' em tabelas existentes
-ALTER TABLE notes ADD COLUMN IF NOT EXISTS image VARCHAR(255);
+-- Tabela de notas
+CREATE TABLE IF NOT EXISTS `notes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `title` varchar(120) NOT NULL,
+  `content` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
